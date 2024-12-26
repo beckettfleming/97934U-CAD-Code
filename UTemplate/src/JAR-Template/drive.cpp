@@ -7,8 +7,10 @@
  * selected.
  * 
  * @param drive_setup The style of drive, such as TANK_TWO_ROTATION.
- * @param DriveL Left motor group.
- * @param DriveR Right motor group.
+ * @param DriveLF Left motor group.
+ * @param DriveLR Right motor group.
+ * @param DriveRF Left motor group.
+ * @param DriveRR Right motor group.
  * @param gyro_port IMU port.
  * @param wheel_diameter Wheel diameter in inches.
  * @param wheel_ratio External drive gear ratio.
@@ -21,7 +23,7 @@
  * @param SidewaysTracker_center_distance Vertical distance in inches.
  */
 
-Drive::Drive(enum::drive_setup drive_setup, motor_group DriveL, motor_group DriveR, 
+Drive::Drive(enum::drive_setup drive_setup, motor_group DriveLF, motor_group DriveLR, motor_group DriveRF, motor_group DriveRR, 
 int gyro_port, float wheel_diameter, float wheel_ratio, float gyro_scale, 
 int ForwardTracker_port, float ForwardTracker_diameter, float ForwardTracker_center_distance, 
 int SidewaysTracker_port, float SidewaysTracker_diameter, float SidewaysTracker_center_distance) :
@@ -36,15 +38,17 @@ int SidewaysTracker_port, float SidewaysTracker_diameter, float SidewaysTracker_
   SidewaysTracker_diameter(SidewaysTracker_diameter),
   SidewaysTracker_in_to_deg_ratio(M_PI*SidewaysTracker_diameter/360.0),
   drive_setup(drive_setup),
-  DriveL(DriveL),
-  DriveR(DriveR),
+  DriveLF(DriveLF),
+  DriveLR(DriveLR),
+  DriveRF(DriveRF),
+  DriveRR(DriveRR),
   Gyro(inertial(gyro_port)),
   R_ForwardTracker(ForwardTracker_port),
   R_SidewaysTracker(SidewaysTracker_port),
   E_ForwardTracker(ThreeWire.Port[to_port(ForwardTracker_port)]),
   E_SidewaysTracker(ThreeWire.Port[to_port(SidewaysTracker_port)])
 {
-    if (drive_setup == TANK_ONE_FORWARD_ENCODER || drive_setup == TANK_ONE_FORWARD_ROTATION || drive_setup == ZERO_TRACKER_ODOM){
+    if (drive_setup == TANK_ONE_FORWARD_ENCODER || drive_setup == TANK_ONE_FORWARD_ROTATION || drive_setup == ZERO_TRACKER_ODOM || drive_setup == MECANUM_IMU){
       odom.set_physical_distances(ForwardTracker_center_distance, 0);
     } 
     if (drive_setup == TANK_ONE_SIDEWAYS_ENCODER || drive_setup == TANK_ONE_SIDEWAYS_ROTATION || 
@@ -61,8 +65,10 @@ int SidewaysTracker_port, float SidewaysTracker_diameter, float SidewaysTracker_
  */
 
 void Drive::drive_with_voltage(float leftVoltage, float rightVoltage){
-  DriveL.spin(fwd, leftVoltage, volt);
-  DriveR.spin(fwd, rightVoltage,volt);
+  DriveLF.spin(fwd, leftVoltage, volt);
+  DriveLR.spin(fwd, leftVoltage,volt);
+  DriveRF.spin(fwd, rightVoltage, volt);
+  DriveRR.spin(fwd, rightVoltage,volt);
 }
 
 /**
@@ -207,19 +213,18 @@ float Drive::get_absolute_heading(){
  * @return Left position in inches.
  */
 
-float Drive::get_left_position_in(){
-  return( DriveL.position(deg)*drive_in_to_deg_ratio );
+double getAverageDrivePosition(motor_group& motor1, motor_group& motor2) {
+    return ((motor1.position(deg) + motor2.position(deg)) / 2);
 }
 
-/**
- * Gets the motor group's position and converts to inches.
- * 
- * @return Right position in inches.
- */
-
-float Drive::get_right_position_in(){
-  return( DriveR.position(deg)*drive_in_to_deg_ratio );
+float Drive::get_left_position_in() {
+    return getAverageDrivePosition(DriveLF, DriveLR);
 }
+
+float Drive::get_right_position_in() {
+    return getAverageDrivePosition(DriveRF, DriveRR);
+}
+
 
 /**
  * Stops both sides of the drive with the desired mode.
@@ -228,8 +233,10 @@ float Drive::get_right_position_in(){
  */
 
 void Drive::drive_stop(vex::brakeType mode){
-  DriveL.stop(mode);
-  DriveR.stop(mode);
+  DriveLF.stop(mode);
+  DriveLR.stop(mode);
+  DriveRF.stop(mode);
+  DriveRR.stop(mode);
 }
 
 /**
@@ -329,8 +336,10 @@ void Drive::left_swing_to_angle(float angle, float swing_max_voltage, float swin
     float error = reduce_negative_180_to_180(angle - get_absolute_heading());
     float output = swingPID.compute(error);
     output = clamp(output, -turn_max_voltage, turn_max_voltage);
-    DriveL.spin(fwd, output, volt);
-    DriveR.stop(hold);
+    DriveLF.spin(fwd, output, volt);
+    DriveLR.spin(fwd, output, volt);
+    DriveRF.stop(hold);
+    DriveRR.stop(hold);
     task::sleep(10);
   }
 }
@@ -345,8 +354,10 @@ void Drive::right_swing_to_angle(float angle, float swing_max_voltage, float swi
     float error = reduce_negative_180_to_180(angle - get_absolute_heading());
     float output = swingPID.compute(error);
     output = clamp(output, -turn_max_voltage, turn_max_voltage);
-    DriveR.spin(reverse, output, volt);
-    DriveL.stop(hold);
+    DriveRF.spin(reverse, output, volt);
+    DriveRR.spin(reverse, output, volt);
+    DriveLF.stop(hold);
+    DriveLR.stop(hold);
     task::sleep(10);
   }
 }
@@ -358,7 +369,7 @@ void Drive::right_swing_to_angle(float angle, float swing_max_voltage, float swi
  */
 
 float Drive::get_ForwardTracker_position(){
-  if (drive_setup==ZERO_TRACKER_ODOM || drive_setup == TANK_ONE_SIDEWAYS_ENCODER || drive_setup == TANK_ONE_SIDEWAYS_ROTATION){
+  if (drive_setup==ZERO_TRACKER_ODOM || drive_setup == TANK_ONE_SIDEWAYS_ENCODER || drive_setup == TANK_ONE_SIDEWAYS_ROTATION || drive_setup == MECANUM_IMU){
     return(get_right_position_in());
   }
   if (drive_setup==TANK_ONE_FORWARD_ENCODER || drive_setup == TANK_TWO_ENCODER){
@@ -375,7 +386,7 @@ float Drive::get_ForwardTracker_position(){
  */
 
 float Drive::get_SidewaysTracker_position(){
-  if (drive_setup==TANK_ONE_FORWARD_ENCODER || drive_setup == TANK_ONE_FORWARD_ROTATION || drive_setup == ZERO_TRACKER_ODOM){
+  if (drive_setup==TANK_ONE_FORWARD_ENCODER || drive_setup == TANK_ONE_FORWARD_ROTATION || drive_setup == ZERO_TRACKER_ODOM || drive_setup == MECANUM_IMU){
     return(0);
   }else if (drive_setup == TANK_TWO_ENCODER || drive_setup == TANK_ONE_SIDEWAYS_ENCODER){
     return(E_SidewaysTracker.position(deg)*SidewaysTracker_in_to_deg_ratio);
@@ -640,8 +651,10 @@ void Drive::turn_to_point(float X_position, float Y_position, float extra_angle_
 void Drive::control_arcade(){
   float throttle = deadband(controller(primary).Axis3.value(), 5);
   float turn = deadband(controller(primary).Axis1.value(), 5);
-  DriveL.spin(fwd, to_volt(throttle+turn), volt);
-  DriveR.spin(fwd, to_volt(throttle-turn), volt);
+  DriveLF.spin(fwd, to_volt(throttle+turn), volt);
+  DriveLR.spin(fwd, to_volt(throttle+turn), volt);
+  DriveRF.spin(fwd, to_volt(throttle-turn), volt);
+  DriveRR.spin(fwd, to_volt(throttle-turn), volt);
 }
 
 /**
@@ -657,8 +670,10 @@ void Drive::control_arcade(){
 void Drive::control_tank(){
   float leftthrottle = deadband(controller(primary).Axis3.value(), 5);
   float rightthrottle = deadband(controller(primary).Axis2.value(), 5);
-  DriveL.spin(fwd, to_volt(leftthrottle), volt);
-  DriveR.spin(fwd, to_volt(rightthrottle), volt);
+  DriveLF.spin(fwd, to_volt(leftthrottle), volt);
+  DriveLR.spin(fwd, to_volt(leftthrottle), volt);
+  DriveRF.spin(fwd, to_volt(rightthrottle), volt);
+  DriveRR.spin(fwd, to_volt(rightthrottle), volt);
 }
 
 /**
@@ -669,3 +684,24 @@ int Drive::position_track_task(){
   chassis.position_track();
   return(0);
 }
+
+
+void Drive::control_mecanum() {
+  // Retrieve the joystick inputs
+  float forward = deadband(controller(primary).Axis3.value(), 5);  // Forward/backward movement
+  float strafe = deadband(controller(primary).Axis4.value(), 5);   // Left/right strafing
+  float turn = deadband(controller(primary).Axis1.value(), 5);     // Rotation
+
+  // Calculate motor voltages for mecanum drive
+  float frontLeft = forward + strafe + turn;
+  float backLeft = forward - strafe + turn;
+  float frontRight = forward - strafe - turn;
+  float backRight = forward + strafe - turn;
+  
+  // Apply voltages to the motors
+  DriveLF.spin(fwd, to_volt(frontLeft), volt);
+  DriveLR.spin(fwd, to_volt(backLeft), volt);
+  DriveRF.spin(fwd, to_volt(frontRight), volt);
+  DriveRR.spin(fwd, to_volt(backRight), volt);
+}
+
