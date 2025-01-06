@@ -687,21 +687,26 @@ int Drive::position_track_task(){
 
 
 void Drive::control_mecanum() {
-  // Retrieve the joystick inputs
-  float forward = deadband(controller(primary).Axis3.value(), 5);  // Forward/backward movement
-  float strafe = deadband(controller(primary).Axis4.value(), 5);   // Left/right strafing
-  float turn = deadband(controller(primary).Axis1.value(), 5);     // Rotation
+    // Variables for scaling
+    const float rearStrafeScale = 0.725;  // Scale factor for rear motors during strafing
+    const float strafeMultiplier = 1; // Overall strafe power multiplier
 
-  // Calculate motor voltages for mecanum drive
-  float frontLeft = forward + strafe + turn;
-  float backLeft = forward - strafe + turn;
-  float frontRight = forward - strafe - turn;
-  float backRight = forward + strafe - turn;
-  
-  // Apply voltages to the motors
-  DriveLF.spin(fwd, to_volt(frontLeft), volt);
-  DriveLR.spin(fwd, to_volt(backLeft), volt);
-  DriveRF.spin(fwd, to_volt(frontRight), volt);
-  DriveRR.spin(fwd, to_volt(backRight), volt);
+    // Retrieve joystick inputs
+    float forward = deadband(controller(primary).Axis3.value(), 5);  // Forward/backward movement
+    float strafe = controller(primary).Axis4.value() * strafeMultiplier; // Left/right strafing with multiplier
+    float turn = deadband(controller(primary).Axis1.value(), 5);     // Rotation
+
+    // Calculate motor voltages for mecanum drive with rear scaling
+    float frontLeft = (forward + strafe + turn) * 6;
+    float backLeft = (forward - (strafe * rearStrafeScale) + turn) * 6;
+    float frontRight = (forward - strafe - turn) * 6;
+    float backRight = (forward + (strafe * rearStrafeScale) - turn) * 6;
+
+    // Apply voltages to the motors
+    DriveLF.spin(fwd, frontLeft, rpm);
+    DriveLR.spin(fwd, backLeft, rpm);
+    DriveRF.spin(fwd, frontRight, rpm);
+    DriveRR.spin(fwd, backRight, rpm);
 }
+
 

@@ -2,7 +2,6 @@
 
 using namespace vex;
 competition Competition;
-
 /*---------------------------------------------------------------------------*/
 /*                             VEXcode Config                                */
 /*                                                                           */
@@ -14,6 +13,8 @@ competition Competition;
 /*  properly reversed, meaning the drive should drive forward when all       */
 /*  motors spin forward.                                                     */
 /*---------------------------------------------------------------------------*/
+
+int LBPositionState = 0;
 
 /*---------------------------------------------------------------------------*/
 /*                             JAR-Template Config                           */
@@ -115,7 +116,7 @@ void pre_auton() {
   // Initializing Robot Configuration. DO NOT REMOVE!
   vexcodeInit();
   default_constants();
-
+  LB.resetPosition();
   while(!auto_started){
     Brain.Screen.clearScreen();
     Brain.Screen.printAt(5, 20, "JAR Template v1.2.0");
@@ -197,6 +198,13 @@ void autonomous(void) {
  }
 }
 
+void doinkerToggle() {
+  doinker = !doinker;
+}
+void clampToggle() {
+  mgClamp = !mgClamp;
+}
+
 /*---------------------------------------------------------------------------*/
 /*                                                                           */
 /*                              User Control Task                            */
@@ -209,10 +217,54 @@ void autonomous(void) {
 
 void usercontrol(void) {
   // User control code here, inside the loop
+  LB.setStopping(hold);
+  doinker = false;
+  mgClamp = false;
   while (1) {
     // This is the main execution loop for the user control program.
     // Each time through the loop your program should update motor + servo
     // values based on feedback from the joysticks.
+
+    if (Controller1.ButtonB.pressing()) {
+            IntakeS2.spin(vex::directionType::fwd, 600, vex::velocityUnits::rpm);
+            IntakeS1.spin(vex::directionType::fwd, 200, vex::velocityUnits::rpm);
+    }
+    else if (Controller1.ButtonDown.pressing()) {
+            IntakeS2.spin(vex::directionType::rev, 600, vex::velocityUnits::rpm);
+            IntakeS1.spin(vex::directionType::rev, 200, vex::velocityUnits::rpm);
+    }
+    else {
+            IntakeS2.stop(vex::brakeType::hold);
+            IntakeS1.stop(vex::brakeType::hold);
+    }
+
+    Controller1.ButtonR1.pressed(doinkerToggle);
+    Controller1.ButtonR2.pressed(clampToggle);
+
+    if (Controller1.ButtonL1.pressing()) {
+            vex::task::sleep(200); // Debounce delay
+            LBPositionState = (LBPositionState + 1) % 3; // Cycle through 0, 1, 2
+            switch (LBPositionState) {
+                case 0:
+                    LB.spinToPosition(5, deg, 200, rpm);
+                    break;
+                case 1:
+                    LB.spinToPosition(-64, deg, 200, rpm);
+                    break;
+                case 2:
+                    IntakeS2.spinFor(-250, msec, 600, rpm);
+                    LB.spinToPosition(-480, deg, 200, rpm);
+                    LB.spinToPosition(5, deg, 200, rpm); 
+                    break;
+            }
+        }
+
+    if (Controller1.ButtonL2.pressing()) {
+            LB.stop(vex::brakeType::hold);
+            LB.spinToPosition(0, deg, 200, rpm);
+            LBPositionState = 0; // Ensure state matches the reset position
+            vex::task::sleep(200); // Debounce delay
+        }
 
     // ........................................................................
     // Insert user code here. This is where you use the joystick values to
@@ -220,7 +272,7 @@ void usercontrol(void) {
     // ........................................................................
 
     //Replace this line with chassis.control_tank()
-    chassis.control_arcade();
+    chassis.control_mecanum();
 
     wait(20, msec); // Sleep the task for a short amount of time to
                     // prevent wasted resources.
