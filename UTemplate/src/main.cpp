@@ -217,7 +217,8 @@ void clampToggle() {
 
 void usercontrol(void) {
   // User control code here, inside the loop
-  LB.setStopping(hold);
+
+  //LB.setStopping(hold);
   doinker = false;
   mgClamp = false;
   while (1) {
@@ -241,6 +242,7 @@ void usercontrol(void) {
     Controller1.ButtonR1.pressed(doinkerToggle);
     Controller1.ButtonR2.pressed(clampToggle);
 
+ /*
     if (Controller1.ButtonL1.pressing()) {
             vex::task::sleep(200); // Debounce delay
             LBPositionState = (LBPositionState + 1) % 3; // Cycle through 0, 1, 2
@@ -265,6 +267,8 @@ void usercontrol(void) {
             LBPositionState = 0; // Ensure state matches the reset position
             vex::task::sleep(200); // Debounce delay
         }
+*/
+
 
     // ........................................................................
     // Insert user code here. This is where you use the joystick values to

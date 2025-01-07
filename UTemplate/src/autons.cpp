@@ -120,6 +120,25 @@ void tank_odom_test(){
 
 void red_non_rush(){
   //write auton here 
+Chassis.drive_distance(-22);
+mgClamp.clampToggle();
+Chassis.turn_to_angle(90);
+//intake spin
+Chassis.drive_distance(10);
+wait(.3, sec);
+Chassis.drive_distance(-3);
+Chassis.turn_to_angle(80);
+//intake spin
+Chassis.drive_distance(10);
+wait(.3, sec);
+Chassis.drive_distance(-36);
+Chassis.turn_to_angle(45);
+//intake spin
+Chassis.drive_distance(22);
+wait(.3,sec);
+Chassis.drive_distance(-22);
+Chassis.turn_to_angle(0);
+Chassis.drive_distance(30);  
 
 
 }
@@ -132,6 +151,25 @@ void red_rush(){
 
 void blue_non_rush(){
   //write auton here 
+Chassis.drive_distance(-22);
+mgClamp.clampToggle();
+Chassis.turn_to_angle(-90);
+//intake spin
+Chassis.drive_distance(10);
+wait(.3, sec);
+Chassis.drive_distance(-3);
+Chassis.turn_to_angle(-80);
+//intake spin
+Chassis.drive_distance(10);
+wait(.3, sec);
+Chassis.drive_distance(-36);
+Chassis.turn_to_angle(-45);
+//intake spin
+Chassis.drive_distance(22);
+wait(.3,sec);
+Chassis.drive_distance(-22);
+Chassis.turn_to_angle(0);
+Chassis.drive_distance(30);  
 
 
 }
