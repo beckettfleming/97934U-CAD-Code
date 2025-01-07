@@ -172,16 +172,16 @@ void autonomous(void) {
   auto_started = true;
   switch(current_auton_selection){ 
     case 0:
-      drive_test();
+      red_non_rush();
       break;
     case 1:         
-      drive_test();
+      red_rush();
       break;
     case 2:
-      turn_test();
+      blue_non_rush();
       break;
     case 3:
-      swing_test();
+      blue_rush();
       break;
     case 4:
       full_test();

@@ -8,6 +8,10 @@
  * exit conditions, check the docs.
  */
 
+
+
+
+
 void default_constants(){
   // Each constant set is in the form of (maxVoltage, kP, kI, kD, startI).
   chassis.set_drive_constants(10, 1.5, 0, 10, 0);
@@ -112,4 +116,28 @@ void tank_odom_test(){
   chassis.drive_to_point(24,24);
   chassis.drive_to_point(0,0);
   chassis.turn_to_angle(0);
+}
+
+void red_non_rush(){
+  //write auton here 
+
+
+}
+
+void red_rush(){
+  //write auton here
+
+
+}
+
+void blue_non_rush(){
+  //write auton here 
+
+
+}
+
+void blue_rush(){
+ // write auton here 
+
+
 }
