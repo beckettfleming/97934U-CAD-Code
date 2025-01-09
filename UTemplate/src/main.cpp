@@ -226,6 +226,9 @@ void usercontrol(void) {
     // Each time through the loop your program should update motor + servo
     // values based on feedback from the joysticks.
 
+    //Replace this line with chassis.control_tank()
+    chassis.control_mecanum();
+
     if (Controller1.ButtonB.pressing()) {
             IntakeS2.spin(vex::directionType::fwd, 600, vex::velocityUnits::rpm);
             IntakeS1.spin(vex::directionType::fwd, 200, vex::velocityUnits::rpm);
@@ -274,9 +277,6 @@ void usercontrol(void) {
     // Insert user code here. This is where you use the joystick values to
     // update your motors, etc.
     // ........................................................................
-
-    //Replace this line with chassis.control_tank()
-    chassis.control_mecanum();
 
     wait(20, msec); // Sleep the task for a short amount of time to
                     // prevent wasted resources.
