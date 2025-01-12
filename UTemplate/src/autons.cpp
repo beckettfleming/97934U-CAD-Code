@@ -8,7 +8,10 @@
  * exit conditions, check the docs.
  */
 
-
+void intake_spin() {
+  IntakeS2.spinFor(5, rev, 600, rpm);
+  IntakeS1.spinFor(5, rev, 600, rpm); 
+}
 
 
 
@@ -118,28 +121,35 @@ void tank_odom_test(){
   chassis.turn_to_angle(0);
 }
 
+/*-----------------------------------------Match Autons--------------------------------------------*/
+
 void red_non_rush(){
   //write auton here 
-Chassis.drive_distance(-22);
-mgClamp.clampToggle();
-Chassis.turn_to_angle(90);
-//intake spin
-Chassis.drive_distance(10);
-wait(.3, sec);
-Chassis.drive_distance(-3);
-Chassis.turn_to_angle(80);
-//intake spin
-Chassis.drive_distance(10);
-wait(.3, sec);
-Chassis.drive_distance(-36);
-Chassis.turn_to_angle(45);
-//intake spin
-Chassis.drive_distance(22);
-wait(.3,sec);
-Chassis.drive_distance(-22);
-Chassis.turn_to_angle(0);
-Chassis.drive_distance(30);  
 
+//chassis.drive_distance(-22);
+chassis.turn_to_angle(90);
+
+/*
+mgClamp.set(true);
+chassis.turn_to_angle(90);
+thread spin_1 = thread (intake_spin);
+chassis.drive_distance(10);
+wait(.3, sec);
+
+chassis.drive_distance(-3);
+chassis.turn_to_angle(80);
+thread spin_2 = thread (intake_spin);
+chassis.drive_distance(10);
+wait(.3, sec);
+chassis.drive_distance(-36);
+chassis.turn_to_angle(45);
+thread spin_3 = thread (intake_spin);
+chassis.drive_distance(22);
+wait(.3,sec);
+chassis.drive_distance(-22);
+chassis.turn_to_angle(0);
+chassis.drive_distance(30);  
+*/
 
 }
 
@@ -151,26 +161,25 @@ void red_rush(){
 
 void blue_non_rush(){
   //write auton here 
-Chassis.drive_distance(-22);
-mgClamp.clampToggle();
-Chassis.turn_to_angle(-90);
-//intake spin
-Chassis.drive_distance(10);
+chassis.drive_distance(-22);
+mgClamp.set(true);
+chassis.turn_to_angle(-90);
+thread spin_1 = thread (intake_spin);
+chassis.drive_distance(10);
 wait(.3, sec);
-Chassis.drive_distance(-3);
-Chassis.turn_to_angle(-80);
-//intake spin
-Chassis.drive_distance(10);
+chassis.drive_distance(-3);
+chassis.turn_to_angle(-80);
+thread spin_2 = thread (intake_spin);
+chassis.drive_distance(10);
 wait(.3, sec);
-Chassis.drive_distance(-36);
-Chassis.turn_to_angle(-45);
-//intake spin
-Chassis.drive_distance(22);
+chassis.drive_distance(-36);
+chassis.turn_to_angle(-45);
+thread spin_3 = thread (intake_spin);
+chassis.drive_distance(-22);
 wait(.3,sec);
-Chassis.drive_distance(-22);
-Chassis.turn_to_angle(0);
-Chassis.drive_distance(30);  
-
+chassis.drive_distance(-22);
+chassis.turn_to_angle(0);
+chassis.drive_distance(30);  
 
 }
 

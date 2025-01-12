@@ -19,6 +19,8 @@ motor RightRear1 = motor(PORT11, ratio6_1, true);
 motor RightRear2 = motor(PORT18, ratio6_1, false);
 motor IntakeS1 = motor(PORT15, ratio18_1, true);
 motor IntakeS2 = motor(PORT5, ratio6_1, true);
+
+
 motor LB = motor(PORT19, ratio6_1, false);
 controller Controller1 = controller();
 digital_out mgClamp = digital_out(Brain.ThreeWirePort.B);
