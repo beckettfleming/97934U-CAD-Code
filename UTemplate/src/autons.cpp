@@ -126,7 +126,7 @@ void tank_odom_test(){
 void red_non_rush(){
   //write auton here 
 
-//chassis.drive_distance(-22);
+chassis.drive_distance(-22);
 chassis.turn_to_angle(90);
 
 /*

@@ -17,9 +17,13 @@ motor LeftRear2 = motor(PORT7, ratio6_1, true);
 motor RightFront = motor(PORT3, ratio6_1, false);
 motor RightRear1 = motor(PORT11, ratio6_1, true);
 motor RightRear2 = motor(PORT18, ratio6_1, false);
-motor IntakeS1 = motor(PORT15, ratio18_1, true);
+motor IntakeS1R = motor(PORT15, ratio18_1, true);
+motor IntakeS1L = motor (PORT19, ratio18_1, true);
 motor IntakeS2 = motor(PORT5, ratio6_1, true);
 
+motor_group IntakeS1 = (IntakeS1L, IntakeS1R);
+
+motor_group Intake = (IntakeS1L, IntakeS1R, IntakeS2);
 
 motor LB = motor(PORT19, ratio6_1, false);
 controller Controller1 = controller();

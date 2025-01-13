@@ -13,8 +13,13 @@ extern motor LeftRear2;
 extern motor RightFront;
 extern motor RightRear1;
 extern motor RightRear2;
-extern motor IntakeS1;
+extern motor IntakeS1L;
+extern motor IntakeS1R;
 extern motor IntakeS2;
+
+extern motor_group IntakeS1;
+extern motor_group Intake;
+
 extern motor LB;
 extern digital_out mgClamp;
 extern digital_out doinker;
