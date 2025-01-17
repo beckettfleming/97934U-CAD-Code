@@ -8,13 +8,6 @@
  * exit conditions, check the docs.
  */
 
-void intake_spin() {
-  IntakeS2.spinFor(5, rev, 600, rpm);
-  IntakeS1.spinFor(5, rev, 600, rpm); 
-}
-
-
-
 void default_constants(){
   // Each constant set is in the form of (maxVoltage, kP, kI, kD, startI).
   chassis.set_drive_constants(10, 1.5, 0, 10, 0);
@@ -121,13 +114,23 @@ void tank_odom_test(){
   chassis.turn_to_angle(0);
 }
 
+void DriveChassis(float inch, float speed) {
+    // Diameter of the circle
+    const float diameter = 2.0f;
+    // Circumference of the circle C = π * D
+    const float circumference = M_PI * diameter;
+    
+    // Convert inches to degrees
+    float degrees = (inch / circumference) * 360.0f;
+    FullChassis.spinFor(degrees, deg, speed, rpm);
+}
+
 /*-----------------------------------------Match Autons--------------------------------------------*/
 
 void red_non_rush(){
   //write auton here 
-
-chassis.drive_distance(-22);
-chassis.turn_to_angle(90);
+  
+  DriveChassis(12, 600);
 
 /*
 mgClamp.set(true);
@@ -161,25 +164,6 @@ void red_rush(){
 
 void blue_non_rush(){
   //write auton here 
-chassis.drive_distance(-22);
-mgClamp.set(true);
-chassis.turn_to_angle(-90);
-thread spin_1 = thread (intake_spin);
-chassis.drive_distance(10);
-wait(.3, sec);
-chassis.drive_distance(-3);
-chassis.turn_to_angle(-80);
-thread spin_2 = thread (intake_spin);
-chassis.drive_distance(10);
-wait(.3, sec);
-chassis.drive_distance(-36);
-chassis.turn_to_angle(-45);
-thread spin_3 = thread (intake_spin);
-chassis.drive_distance(-22);
-wait(.3,sec);
-chassis.drive_distance(-22);
-chassis.turn_to_angle(0);
-chassis.drive_distance(30);  
 
 }
 

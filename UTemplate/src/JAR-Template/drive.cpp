@@ -66,7 +66,7 @@ int SidewaysTracker_port, float SidewaysTracker_diameter, float SidewaysTracker_
 
 void Drive::drive_with_voltage(float leftVoltage, float rightVoltage){
   DriveLF.spin(fwd, leftVoltage, volt);
-  DriveLR.spin(fwd, leftVoltage,volt);
+  DriveLR.spin(fwd, leftVoltage, volt);
   DriveRF.spin(fwd, rightVoltage, volt);
   DriveRR.spin(fwd, rightVoltage,volt);
 }
@@ -213,16 +213,12 @@ float Drive::get_absolute_heading(){
  * @return Left position in inches.
  */
 
-double getAverageDrivePosition(motor_group& motor1, motor_group& motor2) {
-    return ((motor1.position(deg) + motor2.position(deg)) / 2);
-}
-
 float Drive::get_left_position_in() {
-    return getAverageDrivePosition(DriveLF, DriveLR);
+    return DriveLR.position(deg);
 }
 
 float Drive::get_right_position_in() {
-    return getAverageDrivePosition(DriveRF, DriveRR);
+    return DriveRR.position(deg);
 }
 
 

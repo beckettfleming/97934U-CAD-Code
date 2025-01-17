@@ -24,6 +24,7 @@ motor IntakeS2 = motor(PORT5, ratio6_1, true);
 motor_group IntakeS1 = (IntakeS1L, IntakeS1R);
 
 motor_group Intake = (IntakeS1L, IntakeS1R, IntakeS2);
+motor_group FullChassis = motor_group(LeftFront, LeftRear1, LeftRear2, RightFront, RightRear1, RightRear2);
 
 motor LB = motor(PORT19, ratio6_1, false);
 controller Controller1 = controller();

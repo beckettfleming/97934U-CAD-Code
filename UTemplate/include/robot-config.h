@@ -19,6 +19,9 @@ extern motor IntakeS2;
 
 extern motor_group IntakeS1;
 extern motor_group Intake;
+extern motor_group lDrive;
+extern motor_group rDrive;
+extern motor_group FullChassis;
 
 extern motor LB;
 extern digital_out mgClamp;
