@@ -26,10 +26,13 @@ motor_group IntakeS1 = (IntakeS1L, IntakeS1R);
 motor_group Intake = (IntakeS1L, IntakeS1R, IntakeS2);
 motor_group FullChassis = motor_group(LeftFront, LeftRear1, LeftRear2, RightFront, RightRear1, RightRear2);
 
-motor LB = motor(PORT19, ratio6_1, false);
+motor LB = motor(PORT13, ratio6_1, true);
 controller Controller1 = controller();
 digital_out mgClamp = digital_out(Brain.ThreeWirePort.B);
 digital_out doinker = digital_out(Brain.ThreeWirePort.A);
+optical Optical = optical(PORT12);
+
+
 
 void vexcodeInit( void ) {
   // nothing to initialize

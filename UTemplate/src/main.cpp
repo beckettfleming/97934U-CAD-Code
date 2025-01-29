@@ -38,7 +38,7 @@ Drive chassis(
 //MECANUM_IMU
 //MECANUM_TWO_ROTATION
 //Write it here:
-MECANUM_IMU,
+TANK_ONE_FORWARD_ROTATION,
 
 //Add the names of your Drive motors into the motor groups below, separated by commas, i.e. motor_group(Motor1,Motor2,Motor3).
 //You will input whatever motor names you chose when you configured your robot using the sidebar configurer, they don't have to be "Motor1" and "Motor2".
@@ -56,7 +56,7 @@ motor_group(RightFront),
 motor_group(RightRear1, RightRear2),
 
 //Specify the PORT NUMBERS of your inertial sensor, in PORT format (i.e. "PORT1", not simply "1"):
-PORT8,
+PORT10,
 
 //Input your wheel diameter. (4" omnis are actually closer to 4.125"):
 2,
@@ -81,28 +81,28 @@ PORT8,
 //If you are using position tracking, this is the Forward Tracker port (the tracker which runs parallel to the direction of the chassis).
 //If this is a rotation sensor, enter it in "PORT1" format, inputting the port below.
 //If this is an encoder, enter the port as an integer. Triport A will be a "1", Triport B will be a "2", etc.
-8,
+PORT1,
 
 //Input the Forward Tracker diameter (reverse it to make the direction switch):
-2.75,
+2.125,
 
 //Input Forward Tracker center distance (a positive distance corresponds to a tracker on the right side of the robot, negative is left.)
 //For a zero tracker tank drive with odom, put the positive distance from the center of the robot to the right side of the drive.
 //This distance is in inches:
-6.25,
+0.5,
 
 //Input the Sideways Tracker Port, following the same steps as the Forward Tracker Port:
-1,
+20,
 
 //Sideways tracker diameter (reverse to make the direction switch):
--2.75,
+-2.125,
 
 //Sideways tracker center distance (positive distance is behind the center of the robot, negative is in front):
 5.5
 
 );
 
-int current_auton_selection = 0;
+int team = 0;
 bool auto_started = false;
 
 /**
@@ -124,38 +124,20 @@ void pre_auton() {
     Brain.Screen.printAt(5, 60, "%d", Brain.Battery.capacity());
     Brain.Screen.printAt(5, 80, "Chassis Heading Reading:");
     Brain.Screen.printAt(5, 100, "%f", chassis.get_absolute_heading());
-    Brain.Screen.printAt(5, 120, "Selected Auton:");
-    switch(current_auton_selection){
+    Brain.Screen.printAt(5, 120, "Team:");
+    switch(team){
       case 0:
-        Brain.Screen.printAt(5, 140, "Auton 1");
+        Brain.Screen.printAt(5, 140, "Red");
         break;
       case 1:
-        Brain.Screen.printAt(5, 140, "Auton 2");
-        break;
-      case 2:
-        Brain.Screen.printAt(5, 140, "Auton 3");
-        break;
-      case 3:
-        Brain.Screen.printAt(5, 140, "Auton 4");
-        break;
-      case 4:
-        Brain.Screen.printAt(5, 140, "Auton 5");
-        break;
-      case 5:
-        Brain.Screen.printAt(5, 140, "Auton 6");
-        break;
-      case 6:
-        Brain.Screen.printAt(5, 140, "Auton 7");
-        break;
-      case 7:
-        Brain.Screen.printAt(5, 140, "Auton 8");
+        Brain.Screen.printAt(5, 140, "Blue");
         break;
     }
     if(Brain.Screen.pressing()){
       while(Brain.Screen.pressing()) {}
-      current_auton_selection ++;
-    } else if (current_auton_selection == 8){
-      current_auton_selection = 0;
+      team ++;
+    } else if (team == 1){
+      team = 0;
     }
     task::sleep(10);
   }
@@ -170,7 +152,7 @@ void pre_auton() {
 
 void autonomous(void) {
   auto_started = true;
-  switch(current_auton_selection){ 
+  switch(team){ 
     case 0:
       red_non_rush();
       break;
@@ -214,6 +196,10 @@ void clampToggle() {
 /*                                                                           */
 /*  You must modify the code to add your own robot specific commands here.   */
 /*---------------------------------------------------------------------------*/
+void Eject() {
+  IntakeS2.spinFor(682, deg, 600, rpm);
+  IntakeS2.spinFor(-90, deg, 600, rpm);
+}
 
 void usercontrol(void) {
   // User control code here, inside the loop
@@ -225,10 +211,25 @@ void usercontrol(void) {
     // This is the main execution loop for the user control program.
     // Each time through the loop your program should update motor + servo
     // values based on feedback from the joysticks.
-
-    //Replace this line with chassis.control_tank()
+//Replace this line with chassis.control_tank() if necessary
     chassis.control_mecanum();
 
+    double hue = Optical.hue();
+    Optical.setLightPower(100, percent);
+    Optical.setLight(ledState::on);
+    //red check 
+    if(hue <= 20) {
+        if(team == 0) {
+          Eject();
+        }
+    }
+    //blue check
+    else if(hue >= 200) {
+        if(team == 1) {
+          Eject();
+        }
+    }
+    
     if (Controller1.ButtonB.pressing()) {
             IntakeS2.spin(vex::directionType::fwd, 600, vex::velocityUnits::rpm);
             IntakeS1.spin(vex::directionType::fwd, 200, vex::velocityUnits::rpm);
@@ -242,35 +243,37 @@ void usercontrol(void) {
             IntakeS1.stop(vex::brakeType::hold);
     }
 
+
+
     Controller1.ButtonR1.pressed(doinkerToggle);
     Controller1.ButtonR2.pressed(clampToggle);
 
- /*
+ 
     if (Controller1.ButtonL1.pressing()) {
             vex::task::sleep(200); // Debounce delay
             LBPositionState = (LBPositionState + 1) % 3; // Cycle through 0, 1, 2
             switch (LBPositionState) {
                 case 0:
-                    LB.spinToPosition(5, deg, 200, rpm);
+                    LB.spinToPosition(100, deg, 200, rpm);
                     break;
                 case 1:
-                    LB.spinToPosition(-64, deg, 200, rpm);
+                    LB.spinToPosition(39, deg, 200, rpm);
                     break;
                 case 2:
-                    IntakeS2.spinFor(-250, msec, 600, rpm);
-                    LB.spinToPosition(-480, deg, 200, rpm);
-                    LB.spinToPosition(5, deg, 200, rpm); 
+                    IntakeS2.spinFor(-120, deg, 600, rpm);
+                    LB.spinToPosition(300, deg, 200, rpm);
+                    LB.spinToPosition(100, deg, 200, rpm); 
                     break;
             }
         }
 
     if (Controller1.ButtonL2.pressing()) {
             LB.stop(vex::brakeType::hold);
-            LB.spinToPosition(0, deg, 200, rpm);
-            LBPositionState = 0; // Ensure state matches the reset position
+            LB.spinToPosition(100, deg, 200, rpm);
+            LBPositionState = 100; // Ensure state matches the reset position
             vex::task::sleep(200); // Debounce delay
         }
-*/
+
 
 
     // ........................................................................

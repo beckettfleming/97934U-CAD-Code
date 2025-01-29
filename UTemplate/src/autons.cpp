@@ -129,8 +129,9 @@ void DriveChassis(float inch, float speed) {
 
 void red_non_rush(){
   //write auton here 
-  
-  DriveChassis(12, 600);
+
+  chassis.drive_to_pose(8, 8, 90);
+  chassis.drive_to_pose(0, 0, 270);
 
 /*
 mgClamp.set(true);

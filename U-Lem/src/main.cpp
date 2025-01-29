@@ -17,16 +17,28 @@ void on_center_button() {
 	}
 }
 
+pros::Motor flm(-9, pros::E_MOTOR_GEAR_BLUE);
+pros::Motor mlm(6, pros::E_MOTOR_GEAR_BLUE);
+pros::Motor rlm(-7, pros::E_MOTOR_GEAR_BLUE);
+pros::Motor FRM(3, pros::E_MOTOR_GEAR_BLUE);
+pros::Motor MRM(-11, pros::E_MOTOR_GEAR_BLUE);
+pros::Motor RRM(18, pros::E_MOTOR_GEAR_BLUE);
+
+pros::Motor Intake1(15, pros::E_MOTOR_GEAR_GREEN);
+pros::Motor Intake2(5, pros::E_MOTOR_GEAR_BLUE);
+pros::Motor LB(19, pros::E_MOTOR_GEAR_GREEN);
+
+
 // left motor group
-pros::MotorGroup left_motor_group({-1, 2, -3}, pros::MotorGears::blue);
+pros::MotorGroup left_motor_group({-9, 6, -7}, pros::MotorGears::blue);
 // right motor group
-pros::MotorGroup right_motor_group({4, -5, 6}, pros::MotorGears::blue);
+pros::MotorGroup right_motor_group({3, -5, 18}, pros::MotorGears::blue);
 
 // drivetrain settings
 lemlib::Drivetrain drivetrain(&left_motor_group, // left motor group
                               &right_motor_group, // right motor group
-                              10.5, // 10.5 inch track width
-                              lemlib::Omniwheel::NEW_4, // using new 4" omnis
+                              11, // 10.5 inch track width
+                              2, // using new 4" omnis
                               600, // drivetrain rpm is 600
                               2 // horizontal drift is 2 (for now)
 );
@@ -34,9 +46,9 @@ lemlib::Drivetrain drivetrain(&left_motor_group, // left motor group
 // imu
 pros::Imu imu(8);
 // horizontal tracking wheel encoder
-pros::Rotation horizontal_encoder(20);
+//pros::Rotation horizontal_encoder(20);
 // vertical tracking wheel encoder
-pros::Rotation vertical_encoder(19);
+pros::Rotation vertical_encoder(1);
 // horizontal tracking wheel
 lemlib::TrackingWheel horizontal_tracking_wheel(&horizontal_encoder, lemlib::Omniwheel::NEW_2, -5.75);
 // vertical tracking wheel

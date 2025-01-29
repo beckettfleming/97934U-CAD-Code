@@ -48,7 +48,7 @@ int SidewaysTracker_port, float SidewaysTracker_diameter, float SidewaysTracker_
   E_ForwardTracker(ThreeWire.Port[to_port(ForwardTracker_port)]),
   E_SidewaysTracker(ThreeWire.Port[to_port(SidewaysTracker_port)])
 {
-    if (drive_setup == TANK_ONE_FORWARD_ENCODER || drive_setup == TANK_ONE_FORWARD_ROTATION || drive_setup == ZERO_TRACKER_ODOM || drive_setup == MECANUM_IMU){
+    if (drive_setup == TANK_ONE_FORWARD_ENCODER || drive_setup == TANK_ONE_FORWARD_ROTATION || drive_setup == MECANUM_IMU || drive_setup == ZERO_TRACKER_ODOM || drive_setup == MECANUM_IMU){
       odom.set_physical_distances(ForwardTracker_center_distance, 0);
     } 
     if (drive_setup == TANK_ONE_SIDEWAYS_ENCODER || drive_setup == TANK_ONE_SIDEWAYS_ROTATION || 
@@ -382,7 +382,7 @@ float Drive::get_ForwardTracker_position(){
  */
 
 float Drive::get_SidewaysTracker_position(){
-  if (drive_setup==TANK_ONE_FORWARD_ENCODER || drive_setup == TANK_ONE_FORWARD_ROTATION || drive_setup == ZERO_TRACKER_ODOM || drive_setup == MECANUM_IMU){
+  if (drive_setup==TANK_ONE_FORWARD_ENCODER || drive_setup == TANK_ONE_FORWARD_ROTATION || drive_setup == MECANUM_IMU || drive_setup == ZERO_TRACKER_ODOM || drive_setup == MECANUM_IMU){
     return(0);
   }else if (drive_setup == TANK_TWO_ENCODER || drive_setup == TANK_ONE_SIDEWAYS_ENCODER){
     return(E_SidewaysTracker.position(deg)*SidewaysTracker_in_to_deg_ratio);
